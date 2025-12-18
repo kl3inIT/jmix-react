@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Chỉ chạy nếu có thay đổi trong frontend
+if git diff --cached --name-only | grep -q '^jmix-react-frontend/'; then
+  echo "🔍 Running frontend lint-staged..."
+
+  cd jmix-react-frontend || exit 1
+  pnpm lint-staged
+else
+  echo "ℹ️ No frontend changes, skip linting"
+fi
