@@ -1,0 +1,17 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-latest}
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://192.168.0.157:5432/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    mem_limit: 700m
+    command: start-dev
+    container_name: keycloak
+    volumes:
+      - ./keycloak/themes:/opt/keycloak/themes
+    restart: always
+
