@@ -1,16 +1,22 @@
-import { Routes, Route } from "react-router";
-import LoginPage from "@/pages/login/LoginPage";
-import DashBoard from "@/pages/dashboard/DashBoard";
-import { withAuthenticationRequired } from "react-oidc-context";
+import { Routes, Route } from "react-router-dom";
 
-const ProtectedDashboard = withAuthenticationRequired(DashBoard, {
-    OnRedirecting: () => <div>Redirecting to login...</div>,
-});
+import DashBoard from "@/pages/dashboard/DashBoard";
+import AuthCallback from "@/pages/AuthCallback";
+import { ProtectedRoute } from "@/services/auth/";
 
 export default function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<ProtectedDashboard />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+
+            <Route
+                path="/"
+                element={
+                    <ProtectedRoute>
+                        <DashBoard />
+                    </ProtectedRoute>
+                }
+            />
         </Routes>
     );
 }
