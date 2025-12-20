@@ -14,6 +14,7 @@ public class BackendUserMapper extends SynchronizingOidcUserMapper<User> {
 
     public BackendUserMapper(UnconstrainedDataManager dataManager, UserRepository userRepository, ClaimsRolesMapper claimsRolesMapper, RoleGrantedAuthorityUtils roleGrantedAuthorityUtils) {
         super(dataManager, userRepository, claimsRolesMapper, roleGrantedAuthorityUtils);
+        setSynchronizeRoleAssignments(true);
     }
 
     @Override
