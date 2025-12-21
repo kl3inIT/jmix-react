@@ -10,6 +10,13 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
         }
     }, [auth]);
 
+    switch (auth.activeNavigator) {
+        case "signinSilent":
+            return <div>Signing you in...</div>;
+        case "signoutRedirect":
+            return <div>Signing you out...</div>;
+    }
+
     if (auth.isLoading) {
         return <div>Checking authentication...</div>;
     }
