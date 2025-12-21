@@ -7,10 +7,26 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
+import { useEffect } from "react"
 
-import data from "./data.json"
+import { useGetListUser } from "@/api";
 
 export default function Page() {
+    const { data, isLoading, error } = useGetListUser();
+    useEffect(() => {
+        console.log("🔥 useGetListUser data:", data)
+        console.log("📦 isArray:", Array.isArray(data))
+        console.log("📦 typeof data:", typeof data)
+    }, [data])
+
+    if (isLoading) {
+        return <div>Loading users...</div>;
+    }
+
+    if (error) {
+        return <div>Failed to load users</div>;
+    }
+
     return (
         <SidebarProvider
             style={
@@ -30,7 +46,7 @@ export default function Page() {
                             <div className="px-4 lg:px-6">
                                 <ChartAreaInteractive />
                             </div>
-                            <DataTable data={data} />
+                            <DataTable data={data ?? []} />
                         </div>
                     </div>
                 </div>

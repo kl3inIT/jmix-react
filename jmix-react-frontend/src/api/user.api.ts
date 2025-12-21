@@ -1,22 +1,34 @@
 import { http } from "./http";
+import type { User } from "./types";
 
-export type User = {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    active: boolean;
+const RESOURCE = "/rest/entities/User";
+
+/**
+ * Get single user
+ */
+export const getUser = async (id: string): Promise<User> => {
+    console.log("🟢 getUser CALLED with id:", id);
+
+    const response = await http.get<User>(`${RESOURCE}/${id}`);
+
+    console.log("🟢 getUser RESPONSE:", response);
+    console.log("🟢 getUser RESPONSE.DATA:", response.data);
+
+    return response.data;
 };
 
-const RESOURCE = "/rest/entities/ad_User";
+/**
+ * Get list user
+ */
+export const getListUser = async (): Promise<User[]> => {
+    console.log("🟢 getListUser CALLED");
 
-export const getUsers = async (): Promise<User[]> => {
-    const res = await http.get<User[]>(RESOURCE);
-    return res.data;
-};
+    const response = await http.get<User[]>(RESOURCE);
 
-export const getUserById = async (id: string): Promise<User> => {
-    const res = await http.get<User>(`${RESOURCE}/${id}`);
-    return res.data;
+    console.log("🟢 getListUser RESPONSE:", response);
+    console.log("🟢 getListUser RESPONSE.DATA:", response.data);
+    console.log("🟢 getListUser DATA TYPE:", typeof response.data);
+    console.log("🟢 getListUser IS ARRAY:", Array.isArray(response.data));
+
+    return response.data;
 };
