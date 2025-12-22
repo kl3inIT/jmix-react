@@ -7,17 +7,10 @@ import {
     SidebarInset,
     SidebarProvider,
 } from "@/components/ui/sidebar"
-import { useEffect } from "react"
-
 import { useGetListUser } from "@/api";
-
+import { columns } from "./user-columns";
 export default function Page() {
     const { data, isLoading, error } = useGetListUser();
-    useEffect(() => {
-        console.log("🔥 useGetListUser data:", data)
-        console.log("📦 isArray:", Array.isArray(data))
-        console.log("📦 typeof data:", typeof data)
-    }, [data])
 
     if (isLoading) {
         return <div>Loading users...</div>;
@@ -46,7 +39,7 @@ export default function Page() {
                             <div className="px-4 lg:px-6">
                                 <ChartAreaInteractive />
                             </div>
-                            <DataTable data={data ?? []} />
+                            <DataTable columns={columns} data={data ?? []} />
                         </div>
                     </div>
                 </div>
