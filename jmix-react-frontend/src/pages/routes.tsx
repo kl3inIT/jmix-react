@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import DashBoard from "@/pages/dashboard/DashBoard";
 import AuthCallback from "@/pages/AuthCallback";
-import { UserTable } from "@/pages/usertable/UserTable";
+import UserPage from "@/pages/user/UserPage.tsx";
 import { ProtectedRoute } from "@/services/auth";
 
 export default function AppRoutes() {
@@ -14,7 +14,7 @@ export default function AppRoutes() {
                 path="/user"
                 element={
                     <ProtectedRoute>
-                        <UserTable />
+                        <UserPage />
                     </ProtectedRoute>
                 }
             />
