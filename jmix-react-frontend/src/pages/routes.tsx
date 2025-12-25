@@ -1,32 +1,27 @@
 import { Routes, Route } from "react-router-dom";
 
-import DashBoard from "@/pages/dashboard/DashBoard";
 import AuthCallback from "@/pages/AuthCallback";
-import UserPage from "@/pages/user/UserPage.tsx";
+import UserPage from "@/pages/user/UserPage";
 import { ProtectedRoute } from "@/services/auth";
+import { AppLayout, ErrorBoundary, NotFoundPage } from "@/components";
 
 export default function AppRoutes() {
     return (
-        <Routes>
-            <Route path="/auth/callback" element={<AuthCallback />} />
+        <ErrorBoundary>
+            <Routes>
+                <Route path="/auth/callback" element={<AuthCallback />} />
 
-            <Route
-                path="/user"
-                element={
-                    <ProtectedRoute>
-                        <UserPage />
-                    </ProtectedRoute>
-                }
-            />
+                <Route element={<ProtectedRoute />}>
+                    {/* Layout wrapper - AppLayout render Outlet */}
+                    <Route element={<AppLayout />}>
+                        <Route path="/" element={<div className="text-2xl">Dashboard - Coming soon</div>} />
+                        <Route path="/user" element={<UserPage />} />
+                    </Route>
+                </Route>
 
-            <Route
-                path="/"
-                element={
-                    <ProtectedRoute>
-                        <DashBoard />
-                    </ProtectedRoute>
-                }
-            />
-        </Routes>
+                {/* 404 Not Found */}
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+        </ErrorBoundary>
     );
 }

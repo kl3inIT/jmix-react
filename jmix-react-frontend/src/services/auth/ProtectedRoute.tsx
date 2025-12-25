@@ -1,7 +1,9 @@
-import {type PropsWithChildren, useEffect } from "react";
+import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
+import { ProgressSpinner } from "primereact/progressspinner";
 
-export function ProtectedRoute({ children }: PropsWithChildren) {
+export function ProtectedRoute() {
     const auth = useAuth();
 
     useEffect(() => {
@@ -10,20 +12,42 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
         }
     }, [auth]);
 
-    switch (auth.activeNavigator) {
-        case "signinSilent":
-            return <div>Signing you in...</div>;
-        case "signoutRedirect":
-            return <div>Signing you out...</div>;
+    if (auth.activeNavigator === "signinSilent") {
+        return (
+            <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
+                <div className="text-center">
+                    <ProgressSpinner />
+                    <p className="mt-3 text-600">Đang đăng nhập...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (auth.activeNavigator === "signoutRedirect") {
+        return (
+            <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
+                <div className="text-center">
+                    <ProgressSpinner />
+                    <p className="mt-3 text-600">Đang đăng xuất...</p>
+                </div>
+            </div>
+        );
     }
 
     if (auth.isLoading) {
-        return <div>Checking authentication...</div>;
+        return (
+            <div className="flex align-items-center justify-content-center min-h-screen surface-ground">
+                <div className="text-center">
+                    <ProgressSpinner />
+                    <p className="mt-3 text-600">Đang kiểm tra xác thực...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!auth.isAuthenticated) {
         return null;
     }
 
-    return <>{children}</>;
+    return <Outlet />;
 }

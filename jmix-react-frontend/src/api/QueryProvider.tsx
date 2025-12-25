@@ -4,24 +4,30 @@ import {
     QueryCache,
     MutationCache,
 } from "@tanstack/react-query";
-import React, { useState } from "react";
+import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { HttpError } from "./HttpError";
-import { toast } from "react-toastify";
 
 const RETRY_COUNT = 2;
+const RETRY_DELAY_BASE = 1000; // 1 second
+
+function getRetryDelay(attemptIndex: number): number {
+    return Math.min(RETRY_DELAY_BASE * Math.pow(2, attemptIndex), 30000);
+}
+
+function isHttpError(error: unknown): error is HttpError {
+    return error instanceof HttpError;
+}
 
 function createQueryClient() {
     return new QueryClient({
         queryCache: new QueryCache({
-            onError: (error) => {
-                // Logging only (Sentry / console)
-                if (error instanceof HttpError) {
-                    console.error(
-                        "[QueryError]",
-                        error.status,
-                        error.code,
-                        error.request?.url
-                    );
+            onError: (error, query) => {
+                if (isHttpError(error)) {
+                    console.error("[QueryError]", {
+                        queryKey: query.queryKey,
+                        ...error.toJSON(),
+                    });
                 } else {
                     console.error("[UnknownQueryError]", error);
                 }
@@ -29,9 +35,12 @@ function createQueryClient() {
         }),
 
         mutationCache: new MutationCache({
-            onError: (error) => {
-                if (error instanceof HttpError) {
-                    toast.error(error.userMessage());
+            onError: (error, _variables, _context, mutation) => {
+                if (isHttpError(error)) {
+                    console.error("[MutationError]", {
+                        mutationKey: mutation.options.mutationKey,
+                        ...error.toJSON(),
+                    });
                 }
             },
         }),
@@ -39,51 +48,34 @@ function createQueryClient() {
         defaultOptions: {
             queries: {
                 refetchOnWindowFocus: false,
-                refetchOnReconnect: false,
-                staleTime: 30_000, // 30s
+                refetchOnReconnect: true,
+                staleTime: 30_000,
 
                 retry: (failureCount, error) => {
-                    if (!(error instanceof HttpError)) return false;
+                    if (!isHttpError(error)) return false;
                     if (failureCount >= RETRY_COUNT) return false;
-
-                    // Retry ONLY recoverable errors
-                    if ([502, 503, 504].includes(error.status)) return true;
-
-                    // Network error (no response)
-                    if (error.status === 0) return true;
-
-                    return false;
+                    return error.isRetryable();
                 },
 
-                onError: (error) => {
-                    if (!(error instanceof HttpError)) return;
+                retryDelay: getRetryDelay,
 
-                    // Hard error → let ErrorBoundary handle
-                    if (error.isHard()) {
-                        throw error;
-                    }
+                throwOnError: (error) => isHttpError(error) && error.isHard(),
+            },
 
-                    // Soft error → notify user
-                    toast.error(error.userMessage());
-                },
+            mutations: {
+                retry: false,
+                throwOnError: (error) => isHttpError(error) && error.isHard(),
             },
         },
     });
 }
 
-export function QueryProvider({
-                                  children,
-                              }: Readonly<React.PropsWithChildren>) {
+export function QueryProvider({ children }: Readonly<PropsWithChildren>) {
     const [queryClient] = useState(createQueryClient);
 
     return (
         <QueryClientProvider client={queryClient}>
             {children}
-
-            {/* Devtools chỉ bật khi dev */}
-            {/* {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )} */}
         </QueryClientProvider>
     );
 }
