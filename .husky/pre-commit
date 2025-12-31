@@ -1,3 +1,0 @@
-cd jmix-react-frontend || exit 1
-pnpm lint-staged
-
