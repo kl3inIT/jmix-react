@@ -19,7 +19,6 @@ http.interceptors.request.use(
                 config.headers.Authorization = `Bearer ${token}`;
             }
         } catch (error) {
-            // Token không có sẵn, tiếp tục request không có auth header
             console.warn("[HTTP] Failed to get access token:", error);
         }
 
