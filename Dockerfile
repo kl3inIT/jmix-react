@@ -3,19 +3,19 @@ FROM registry.access.redhat.com/ubi9/openjdk-21 AS builder
 
 WORKDIR /app
 
-# copy gradle wrapper & config trước (cache dependency)
+# copy gradle wrapper & config trước để cache deps
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
 
-RUN chmod +x gradlew
-RUN ./gradlew dependencies --no-daemon || true
+# KHÔNG chmod – OpenShift không cho
+RUN sh gradlew dependencies --no-daemon || true
 
-# copy toàn bộ source
+# copy source
 COPY . .
 
-# build Jmix + Vaadin production
-RUN ./gradlew -Pvaadin.productionMode=true bootJar -x test --no-daemon
+# build Jmix (Vaadin production)
+RUN sh gradlew -Pvaadin.productionMode=true bootJar -x test --no-daemon
 
 
 # ---------- RUNTIME STAGE ----------
