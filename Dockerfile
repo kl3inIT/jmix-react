@@ -1,8 +1,9 @@
-FROM bellsoft/liberica-openjre-alpine:21
-COPY *.jar app.jar
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime
 
-# NOTE:
-# Application JAR file should be built with "-Pvaadin.productionMode=true".
-# See more information about deployment in Jmix docs.
+WORKDIR /deployments
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+COPY build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]
