@@ -1,21 +1,32 @@
 # ================================
-# STAGE 1: BUILD (NO CACHE)
+# STAGE 1: BUILD (Gradle)
 # ================================
 FROM registry.access.redhat.com/ubi9/openjdk-21 AS builder
 
-# Build trong thư mục writable
+# 🔥 BUILD TRONG /tmp (writable)
 WORKDIR /tmp/app
 
-# Copy toàn bộ source
+# Copy gradle wrapper & config
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+
+# Ép user cache
+RUN sh gradlew \
+    -g /tmp/gradle \
+    dependencies \
+    --no-daemon || true
+
+# Copy source
 COPY . .
 
-# Build Jmix KHÔNG cache
+# 🔥 Project cache giờ nằm ở /tmp/app/.gradle → OK
 RUN sh gradlew \
+    -g /tmp/gradle \
     -Pvaadin.productionMode=true \
     bootJar \
     -x test \
-    --no-daemon \
-    --no-build-cache
+    --no-daemon
 
 
 # ================================
