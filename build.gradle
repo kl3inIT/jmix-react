@@ -36,6 +36,7 @@ dependencies {
     implementation 'io.jmix.rest:jmix-rest-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.jmix.oidc:jmix-oidc-starter'
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
 

@@ -3,6 +3,7 @@
 
     <menu id="application" title="msg://com.company.jmixreact/menu.application.title" opened="true">
         <item view="User.list" title="msg://com.company.jmixreact.view.user/UserListView.title"/>
+        <item view="ProducerView" title="msg://com.company.jmixreact.view.producer/producerView.title"/>
     </menu>
 
 </menu-config>

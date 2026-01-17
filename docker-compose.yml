@@ -1,0 +1,28 @@
+services:
+  app1:
+    container_name: jmix-app-1
+    build:
+      context: ./app1
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      - SERVER_PORT=8086
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://192.168.0.157:8080/realms/jmix-react
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://192.168.0.157:8080/realms/jmix-react
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID=jmix-app
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET=Bp7CFqxhtzZYLtcgUVRufBN13B5YkPFA
+
+  app2:
+    container_name: jmix-app-2
+    build:
+      context: ./app2
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    environment:
+      - SERVER_PORT=8087   # 🔥 yêu cầu của bạn
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://192.168.0.157:8080/realms/jmix-react
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://192.168.0.157:8080/realms/jmix-react
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID=jmix-app
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET=Bp7CFqxhtzZYLtcgUVRufBN13B5YkPFA
