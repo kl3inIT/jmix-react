@@ -3,6 +3,7 @@ FROM registry.access.redhat.com/ubi9/openjdk-21 AS builder
 
 WORKDIR /app
 
+ENV HOME=/tmp
 ENV GRADLE_USER_HOME=/tmp/gradle
 
 # copy gradle wrapper & config trước để cache deps
