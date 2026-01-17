@@ -1,27 +1,36 @@
-# ---------- BUILD STAGE ----------
+# =====================================
+# STAGE 1: BUILD (Gradle, non-root safe)
+# =====================================
 FROM registry.access.redhat.com/ubi9/openjdk-21 AS builder
 
 WORKDIR /app
 
-ENV HOME=/tmp
-ENV GRADLE_USER_HOME=/tmp/gradle
-
-# copy gradle wrapper & config trước để cache deps
+# Copy Gradle wrapper & config trước để cache dependency
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
 
-# KHÔNG chmod – OpenShift không cho
-RUN sh gradlew dependencies --no-daemon || true
+# ÉP Gradle cache vào /tmp (writable trên OpenShift)
+RUN sh gradlew \
+    -g /tmp/gradle \
+    dependencies \
+    --no-daemon || true
 
-# copy source
+# Copy toàn bộ source
 COPY . .
 
-# build Jmix (Vaadin production)
-RUN sh gradlew -Pvaadin.productionMode=true bootJar -x test --no-daemon
+# Build Jmix (Vaadin production)
+RUN sh gradlew \
+    -g /tmp/gradle \
+    -Pvaadin.productionMode=true \
+    bootJar \
+    -x test \
+    --no-daemon
 
 
-# ---------- RUNTIME STAGE ----------
+# =====================================
+# STAGE 2: RUNTIME (small, secure)
+# =====================================
 FROM registry.access.redhat.com/ubi9/openjdk-21-runtime
 
 WORKDIR /deployments
@@ -30,4 +39,5 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
+# OpenShift inject random UID → OK
 ENTRYPOINT ["java","-jar","app.jar"]
